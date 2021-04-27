@@ -4,7 +4,7 @@
   "description": "Bumper for cobalt presentation",
   "main": "src/index.js",
   "bin": {
-    "cobalt-fill": "bin/create"
+    "cobalt-bump": "bin/create"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -25,6 +25,7 @@
     "chalk": "^2.4.2",
     "commander": "^2.2.0",
     "esm": "^3.2.25",
+    "prompt": "^1.1.0",
     "simple-git": "^2.38.0"
   },
   "homepage": "https://github.com/C0ldman/bump#readme"
