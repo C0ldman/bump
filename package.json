@@ -1,0 +1,31 @@
+{
+  "name": "cobalt-bump",
+  "version": "0.0.1",
+  "description": "Bumper for cobalt presentation",
+  "main": "src/index.js",
+  "bin": {
+    "cobalt-fill": "bin/create"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/C0ldman/bump.git"
+  },
+  "author": "Y.Ukrainets",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/C0ldman/bump/issues"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "dependencies": {
+    "chalk": "^2.4.2",
+    "commander": "^2.2.0",
+    "esm": "^3.2.25",
+    "simple-git": "^2.38.0"
+  },
+  "homepage": "https://github.com/C0ldman/bump#readme"
+}
