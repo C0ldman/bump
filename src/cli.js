@@ -1,21 +1,21 @@
 const commander = require('commander'),
     fs = require('fs'),
     chalk = require('chalk'),
-    pkg = require('../package.json'),
     simpleGit = require('simple-git'),
     path = require('path'),
+    pkg = require(`${path.resolve(process.cwd()+'\\package.json')}`),
     prompt = require('prompt');
 
 prompt.start();
 
-commander.version(pkg.version).description('Filler for cobalt presentations');
+// commander.version(pkg.version).description('Filler for cobalt presentations');
 commander
     .option('-maj --major', 'Up by major (X.0.0)')
     .option('-min --minor', 'Up by minor (0.X.0)')
     .option('-p --patch', 'Up by patch (0.0.X)')
     .description('Merge develop to master and up tag')
     .action(() => {
-        process.chdir('d:\\projects\\viseven\\tysabri-fr-fre-diapo\\');
+        // process.chdir('d:\\projects\\viseven\\tysabri-fr-fre-diapo\\');
         start();
     })
 
@@ -28,22 +28,18 @@ async function start() {
     try {
         var lastTag = await repo.tags('master');
         lastTag = getTag(lastTag.latest);
-        var tagFromApp = pkg.version;
-        tagFromApp = getTag(tagFromApp);
-        console.log('tagFromApp:', tagFromApp);
+
     } catch (e) {
-        console.log('No tags, on branch master and in settings/app.json!');
-        process.exit(1);
+        console.log('No tags on branch master, take from package.json!');
+        lastTag = getTag(pkg.version);
     }
 
-
-    let currentTag = lastTag ? lastTag : tagFromApp
     await repo.checkout('develop');
-    let newTag = upTag(currentTag);
+    let newTag = upTag(lastTag);
+    console.log('newTag:', newTag);
 
-    promptMerge(currentTag.join('.'), newTag);
+    promptMerge(lastTag.join('.'), newTag,repo);
 
-    mergeProject(repo, newTag);
 
 
 }
@@ -70,7 +66,7 @@ function upTag(tag) {
     return `v${newTag.join('.')}`
 }
 
-function promptMerge (oldTag,newTag) {
+function promptMerge (oldTag,newTag,repo) {
     const promptProperties = [
         {
             name: 'confirm',
@@ -81,12 +77,28 @@ function promptMerge (oldTag,newTag) {
     prompt.message = `Merge from tag ${oldTag} to tag ${newTag} ?`;
     prompt.get(promptProperties, function (err, result) {
         if (err) {
+            console.log('err:', err);
         }
         let negativeAnswers = ['n', 'no'];
-        if (negativeAnswers.includes(result.confirm.toLowerCase()))  process.exit(1)
+        if (negativeAnswers.includes(result.confirm.toLowerCase()))  {process.exit(1)} else {mergeProject(repo, newTag)}
     });
 }
 
 async function mergeProject(repo, newTag) {
-    // repo.mergeFromTo('develop', 'master','Merged')
+    console.log('pkg.version:', pkg.version);
+    console.log('newTag.slice(1):', newTag.slice(1));
+    pkg.version = newTag.slice(1);
+    let jsonString = JSON.stringify(pkg);
+
+    fs.writeFileSync(`${path.resolve(process.cwd()+'\\package.json')}`, jsonString, (err) => {
+        if (err) {
+            console.log(`Error writing file ${path}`, err)
+        }
+    });
+    await repo.add('*').commit(`Release ${newTag}`).push();
+    await  repo.addTag(newTag.slice(1)).pushTags('origin');
+    await repo.checkout('master');
+    await repo.merge(['develop']).push();
+    await repo.checkout('develop');
+    console.log('Done');
 }
