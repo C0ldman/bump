@@ -80,15 +80,14 @@ function promptMerge (oldTag,newTag,repo) {
             console.log('err:', err);
         }
         let negativeAnswers = ['n', 'no'];
-        if (negativeAnswers.includes(result.confirm.toLowerCase()))  {process.exit(1)} else {mergeProject(repo, newTag)}
+        let positiveAnswers = ['y', 'yes'];
+        if (negativeAnswers.includes(result.confirm.toLowerCase()) && !positiveAnswers.includes(result.confirm.toLowerCase()))  {process.exit(1)} else {mergeProject(repo, newTag)}
     });
 }
 
 async function mergeProject(repo, newTag) {
-    console.log('pkg.version:', pkg.version);
-    console.log('newTag.slice(1):', newTag.slice(1));
     pkg.version = newTag.slice(1);
-    let jsonString = JSON.stringify(pkg);
+    let jsonString = JSON.stringify(pkg, null, 4);
 
     fs.writeFileSync(`${path.resolve(process.cwd()+'\\package.json')}`, jsonString, (err) => {
         if (err) {
