@@ -3,7 +3,7 @@ const commander = require('commander'),
     chalk = require('chalk'),
     simpleGit = require('simple-git'),
     path = require('path'),
-    pkg = require(`${path.resolve(process.cwd()+'\\package.json')}`),
+    pkg = require(`${path.resolve(process.cwd()+'/package.json')}`),
     prompt = require('prompt');
 
 prompt.start();
@@ -25,6 +25,7 @@ export function cli(args) {
 
 async function start() {
     let repo = await simpleGit(path.resolve(process.cwd()), {binary: 'git'});
+
     try {
         var lastTag = await repo.tags('master');
         lastTag = getTag(lastTag.latest);
@@ -34,9 +35,15 @@ async function start() {
         lastTag = getTag(pkg.version);
     }
 
-    await repo.checkout('develop');
+    try{
+        await repo.checkout('develop');
+    }
+    catch (e) {
+        console.log(e.message);
+        process.exit(1);
+    }
+
     let newTag = upTag(lastTag);
-    console.log('newTag:', newTag);
 
     promptMerge(lastTag.join('.'), newTag,repo);
 
