@@ -45,7 +45,7 @@ async function start() {
 }
 
 function getTag(tag) {
-    return tag.match(/\d./gi).map(item => Number.parseInt(item))
+    return tag.match(/\d.?/gi).map(item => Number.parseInt(item))
 }
 
 function upTag(tag) {
